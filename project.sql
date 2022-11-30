@@ -202,17 +202,25 @@ CREATE DEFINER = 'root'@'localhost'
 PROCEDURE gl271222.SUPPLIER_RATING_PRC()
 this_proc:
 BEGIN
-SELECT s.SUPP_ID, s.SUPP_NAME, r.RAT_RATSTARS ,
-CASE WHEN r.RAT_RATSTARS = 5 THEN  'Excellent Service'
-WHEN r.RAT_RATSTARS>4 THEN 'Good Service'
-WHEN r.RAT_RATSTARS>2 THEN 'Average Service'
+SELECT s.SUPP_ID, s.SUPP_NAME, AVG(r.RAT_RATSTARS) AS Average ,
+CASE WHEN AVG(r.RAT_RATSTARS) = 5 THEN  'Excellent Service'
+WHEN AVG(r.RAT_RATSTARS) >4 THEN 'Good Service'
+WHEN AVG(r.RAT_RATSTARS)>2 THEN 'Average Service'
 ELSE 'Poor Service' END AS Type_of_Service
 FROM  gl271222.rating r, gl271222.`order` o, gl271222.supplier_pricing sp,
  gl271222.supplier s
 WHERE o.ORD_ID = r.ORD_ID
 AND sp.PRICING_ID = o.PRICING_ID
-AND s.SUPP_ID = sp.SUPP_ID;
+AND s.SUPP_ID = sp.SUPP_ID
+GROUP BY s.SUPP_ID;
 END;
+
+
+
+
+
+
+
 
 
 
