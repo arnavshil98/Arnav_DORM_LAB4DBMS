@@ -1,4 +1,9 @@
+-- Q1
 /*
+1)You are required to create tables for supplier,customer,category,product,supplier_pricing,
+order,rating 
+to store the data for the E-commerce with the schema definition given below.
+*/
 create schema gl271222;
 
 create table gl271222.supplier (SUPP_ID INT PRIMARY KEY,
@@ -33,6 +38,10 @@ CREATE TABLE gl271222.RATING(RAT_ID INT PRIMARY KEY, ORD_ID INT, RAT_RATSTARS IN
 constraint fk_ORD_ID_RAT foreign key(ORD_ID)
 references gl271222.`ORDER`(ORD_ID));
 
+-- Q2
+/*
+2)Insert the following data in the table created above
+*/
 use gl271222;
 
 insert into supplier values (1,"Rajesh Retails","Delhi",1234567890);
@@ -118,28 +127,40 @@ insert into rating values (15,115,1);
 insert into rating values (16,116,0);
 */
 
--- q3
+-- Q3
+/*
+3)Display the total number of customers based on gender who have placed orders of worth at least Rs.3000.
+*/
 SELECT CUS_GENDER,count(CUS_GENDER) FROM (
 select c.CUS_ID,C.CUS_GENDER,sum(ORD_AMOUNT) as total_exp_per_cust from `order` o,customer c
 where c.CUS_ID = o.CUS_ID
  group by CUS_ID
  having total_exp_per_cust>=3000) hdr
  group by CUS_GENDER;
--- q4
+-- Q4
+/*
+4)Display all the orders along with product name ordered by a customer having Customer_Id=2
+*/
 SELECT o.ORD_ID,p.PRO_ID,p.PRO_NAME, p.PRO_DESC from `order`o, supplier_pricing sp, product p
 where 
     o.PRICING_ID = sp.PRICING_ID
   and sp.PROD_ID = p.PRO_ID and o.CUS_ID = 2;
 
--- q5
+-- Q5
+/*
+5)Display the Supplier details who can supply more than one product.
+*/
 SELECT  s.SUPP_ID,s.SUPP_NAME,s.SUPP_CITY,s.SUPP_PHONE, count(sp.PROD_ID) distinct_product_count FROM gl271222.supplier_pricing sp
 , gl271222.supplier s
 where s.SUPP_ID = sp.SUPP_ID
  group by sp.SUPP_ID 
 having count(sp.PROD_ID)>1;
 
--- q6
-
+-- Q6
+/*
+6)Find the least expensive product from each category and print the table with category id, 
+name, product name and price of the product
+*/
 SELECT p.PRO_NAME, p.PRO_DESC, p.CAT_ID,(SELECT c.CAT_NAME FROM 
 gl271222.category c WHERE p.CAT_ID = c.CAT_ID
 ), sp1.SUPP_PRICE FROM gl271222.supplier_pricing sp1,gl271222.product p
@@ -149,8 +170,11 @@ WHERE p.PRO_ID = sp.PROD_ID
 GROUP BY p.CAT_ID );
 
 
--- q7
-
+-- Q7
+/*
+6)
+7)Display the Id and Name of the Product ordered after “2021-10-05”.
+*/
 
 SELECT p.PRO_ID, p.PRO_NAME FROM gl271222.`order` o, gl271222.supplier_pricing sp1,gl271222.product p
 
@@ -158,13 +182,21 @@ WHERE o.PRICING_ID = sp1.PRICING_ID
 AND sp1.PROD_ID = p.PRO_ID
 AND o.ORD_DATE>'2021-10-05';
 
--- q8
+-- Q8
+/*
+8)Display customer name and gender whose names start or end with character 'A'.
+*/
 
 SELECT c.CUS_NAME, c.CUS_GENDER FROM gl271222.customer c WHERE UPPER(c.CUS_NAME) LIKE UPPER('A%')
 OR  UPPER(c.CUS_NAME) LIKE UPPER('%A');
 
 -- Q9
-
+/*
+9)Create a stored procedure to display supplier id, name, rating and Type_of_Service.
+ For Type_of_Service, If rating =5, print “Excellent Service”,If rating >4 print “Good Service”,
+ If rating >2 print “Average Service” else print “Poor Service”.
+ 
+*/
 
 CREATE DEFINER = 'root'@'localhost'
 PROCEDURE gl271222.SUPPLIER_RATING_PRC()
